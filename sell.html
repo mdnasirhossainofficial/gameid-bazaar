@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GameID Bazaar - আইডি বিক্রয়</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>GameID Bazaar</h1>
+  <nav>
+    <a href="index.html">হোম</a>
+    <a href="sell.html">আইডি বিক্রয়</a>
+    <a href="profile.html">প্রোফাইল</a>
+    <button id="theme-toggle">থিম পরিবর্তন</button>
+  </nav>
+</header>
+
+<main>
+  <h2>গেম আইডি বিক্রয়ের জন্য ফর্ম পূরণ করুন</h2>
+  <form id="sell-form">
+    <label>আইডি প্রোফাইল ইমেজ URL:<br />
+      <input type="url" id="profileImage" required placeholder="ইমেজ URL দিন" />
+    </label><br /><br />
+    <label>গেম আইডি (UID):<br />
+      <input type="text" id="uid" required placeholder="UID লিখুন" />
+    </label><br /><br />
+    <label>বিক্রয় মূল্য (টাকা):<br />
+      <input type="number" id="price" required placeholder="মূল্য লিখুন" min="1" />
+    </label><br /><br />
+    <button type="submit">পোস্ট করুন</button>
+  </form>
+  <div id="message"></div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
