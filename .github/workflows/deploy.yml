@@ -3,7 +3,7 @@ name: Deploy Static Site to GitHub Pages
 on:
   push:
     branches:
-      - main   # তোমার ব্রাঞ্চ main হলে
+      - main
   workflow_dispatch:
 
 permissions:
@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -21,10 +23,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Upload Site Files
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: ./
+          path: .
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
