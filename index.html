@@ -1,59 +1,71 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GameID Bazaar - Home</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameID Bazaar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; }
+    .card img { height: 220px; object-fit: cover; }
+    nav { background-color: #343a40; }
+    nav a { color: white; margin-right: 15px; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>GameID Bazaar</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="buy.html">Buy ID</a>
-      <a href="addmoney.html">Add Money</a>
-    </nav>
-  </header>
-
-  <section class="slider">
-    <div class="slide active">স্বাগতম GameID Bazaar-এ!</div>
-    <div class="slide">গেম আইডি কিনুন এবং বিক্রি করুন সহজে</div>
-    <div class="slide">নিরাপদ লেনদেন এবং দ্রুত সার্ভিস</div>
-  </section>
-
-  <section class="search-filter">
-    <input type="text" id="searchInput" placeholder="ID খুঁজুন..." />
-    <select id="categoryFilter">
-      <option value="">সকল ক্যাটাগরি</option>
-      <option value="Free Fire">Free Fire</option>
-      <option value="PubG">PubG</option>
-      <option value="Mobile Legends">Mobile Legends</option>
-    </select>
-  </section>
-
-  <section class="id-grid" id="idGrid">
-    <div class="id-card" data-category="Free Fire">
-      <img src="ff_profile_demo.jpg" alt="Free Fire Profile" />
-      <h3>Free Fire ID #1</h3>
-      <button>Buy Now</button>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">GameID Bazaar</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="addmoney.html">Add Money</a></li>
+        <li class="nav-item"><a class="nav-link" href="postid.html">Sell ID</a></li>
+      </ul>
     </div>
-    <div class="id-card" data-category="PubG">
-      <img src="pubg_profile_demo.jpg" alt="PubG Profile" />
-      <h3>PubG ID #1</h3>
-      <button>Buy Now</button>
-    </div>
-    <div class="id-card" data-category="Mobile Legends">
-      <img src="ml_profile_demo.jpg" alt="Mobile Legends Profile" />
-      <h3>Mobile Legends ID #1</h3>
-      <button>Buy Now</button>
-    </div>
-  </section>
+  </div>
+</nav>
+<div class="container my-4">
+  <h2 class="text-center mb-4">Available Game IDs</h2>
+  <div class="row" id="id-list">
+    <!-- Cards dynamically loaded here -->
+  </div>
+</div>
 
-  <footer>
-    <p>© 2025 GameID Bazaar | সর্বস্বত্ব সংরক্ষিত</p>
-  </footer>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  <script src="script.js"></script>
+  const idList = document.getElementById('id-list');
+  db.collection('idPosts').where('status', '==', 'approved').onSnapshot(snapshot => {
+    idList.innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      idList.innerHTML += `
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <img src="${data.imageUrl}" class="card-img-top" alt="Game ID">
+            <div class="card-body">
+              <h5 class="card-title">${data.gameName}</h5>
+              <p class="card-text">UID: ${data.uid}</p>
+              <p class="card-text"><strong>Price:</strong> ${data.price} BDT</p>
+              <button class="btn btn-primary w-100">Buy Now</button>
+            </div>
+          </div>
+        </div>`;
+    });
+  });
+</script>
 </body>
-      </html>
+</html>
