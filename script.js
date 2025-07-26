@@ -1,35 +1,49 @@
-// Slider functionality
-const slides = document.querySelectorAll('.slide');
-let currentSlide = 0;
-setInterval(() => {
-  slides[currentSlide].classList.remove('active');
-  currentSlide = (currentSlide + 1) % slides.length;
-  slides[currentSlide].classList.add('active');
-}, 4000);
+// Firebase Import (CDN ব্যবহার করব index.html এ)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
-// Search & Filter functionality
-const searchInput = document.getElementById('searchInput');
-const categoryFilter = document.getElementById('categoryFilter');
-const idGrid = document.getElementById('idGrid');
+// ✅ Firebase Config (তোমার দেওয়া)
+const firebaseConfig = {
+  apiKey: "AIzaSyCkHH8U_zgWQ01SLLhqrnxhe8j6KjnM9Q0",
+  authDomain: "bismillah-telecom-ed960.firebaseapp.com",
+  databaseURL: "https://bismillah-telecom-ed960-default-rtdb.firebaseio.com",
+  projectId: "bismillah-telecom-ed960",
+  storageBucket: "bismillah-telecom-ed960.appspot.com",
+  messagingSenderId: "163310183508",
+  appId: "1:163310183508:web:036a2421c0cd3c264079c1"
+};
 
-function filterIDs() {
-  const searchTerm = searchInput.value.toLowerCase();
-  const category = categoryFilter.value;
-  const cards = idGrid.querySelectorAll('.id-card');
+// ✅ Firebase Init
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  cards.forEach(card => {
-    const title = card.querySelector('h3').textContent.toLowerCase();
-    const cardCategory = card.getAttribute('data-category');
-    const matchesSearch = title.includes(searchTerm);
-    const matchesCategory = category === '' || category === cardCategory;
+// ✅ Fetch Game IDs from Firebase
+const idList = document.getElementById('id-list');
 
-    if (matchesSearch && matchesCategory) {
-      card.style.display = '';
+function loadGameIDs() {
+  const idRef = ref(db, 'gameIDs'); // Database path: gameIDs
+  onValue(idRef, (snapshot) => {
+    idList.innerHTML = ''; // Clear old data
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      Object.keys(data).forEach(key => {
+        const item = data[key];
+        const card = `
+          <div class="card">
+            <img src="${item.image}" alt="Game ID">
+            <h3>${item.name}</h3>
+            <p>Price: ${item.price} BDT</p>
+            <a href="buy.html?id=${key}" class="btn">Buy Now</a>
+          </div>
+        `;
+        idList.innerHTML += card;
+      });
     } else {
-      card.style.display = 'none';
+      idList.innerHTML = '<p>No Game IDs Available</p>';
     }
   });
 }
 
-searchInput.addEventListener('input', filterIDs);
-categoryFilter.addEventListener('change', filterIDs);
+loadGameIDs();
+
+// ✅ Future: Handle Buy (buy.html এ কাজ করবে)
