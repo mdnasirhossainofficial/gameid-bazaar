@@ -1,5 +1,10 @@
+// Import Firebase SDK
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCkHH8U_zgWQ01SLLhqrnxhe8j6KjnM9Q0",
+  apiKey: "AIzaSyBvnReqxIEGRwWfRZjwr4oJgPGwWLtATKU",
   authDomain: "bismillah-telecom-ed960.firebaseapp.com",
   databaseURL: "https://bismillah-telecom-ed960-default-rtdb.firebaseio.com",
   projectId: "bismillah-telecom-ed960",
@@ -10,4 +15,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+
+export { auth, database };
