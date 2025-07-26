@@ -3,7 +3,7 @@ name: Deploy Static Site to GitHub Pages
 on:
   push:
     branches:
-      - main  # যদি তোমার branch main হয়
+      - main   # main ব্রাঞ্চে push করলে deploy হবে
   workflow_dispatch:
 
 permissions:
