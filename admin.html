@@ -1,92 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel - GameID Bazaar</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | GameID Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f9f9f9;
+        }
+        header {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+        }
+        h2 {
+            color: #333;
+        }
+        .section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: white;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
 </head>
 <body>
-  <div class="container my-5">
-    <h2 class="text-center mb-4">Admin Dashboard</h2>
-    <h4>Pending Game ID Posts</h4>
-    <div id="pendingIds"></div>
+    <header>Admin Panel - GameID Bazaar</header>
 
-    <hr />
+    <div class="container">
+        <!-- Section: Add New Game ID -->
+        <div class="section">
+            <h2>Add New Game ID</h2>
+            <input type="text" id="gameName" placeholder="Game Name (e.g. Free Fire)">
+            <input type="text" id="gameID" placeholder="Game ID">
+            <input type="number" id="price" placeholder="Price (BDT)">
+            <button onclick="addGameID()">Add Game ID</button>
+        </div>
 
-    <h4>Pending Add Money Requests</h4>
-    <div id="pendingMoney"></div>
-  </div>
+        <!-- Section: All Users -->
+        <div class="section">
+            <h2>All Registered Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Role</th>
+                        <th>Wallet</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    <!-- Dynamic Data -->
+                </tbody>
+            </table>
+        </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkHH8U_zgWQ01SLLhqrnxhe8j6KjnM9Q0",
-      authDomain: "bismillah-telecom-ed960.firebaseapp.com",
-      projectId: "bismillah-telecom-ed960",
-      storageBucket: "bismillah-telecom-ed960.appspot.com",
-      messagingSenderId: "163310183508",
-      appId: "1:163310183508:web:036a2421c0cd3c264079c1"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        <!-- Section: All Game IDs -->
+        <div class="section">
+            <h2>Available Game IDs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Game Name</th>
+                        <th>Game ID</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="idTable">
+                    <!-- Dynamic Data -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    const pendingIdsDiv = document.getElementById('pendingIds');
-    const pendingMoneyDiv = document.getElementById('pendingMoney');
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { auth, database } from "./firebase-config.js";
+        import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
-    // Load pending Game IDs
-    db.collection('idPosts').where('status', '==', 'pending').onSnapshot(snapshot => {
-      pendingIdsDiv.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        pendingIdsDiv.innerHTML += `
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5>${data.gameName}</h5>
-              <p>UID: ${data.uid}</p>
-              <p>Price: ${data.price} BDT</p>
-              <img src="${data.imageUrl}" alt="Profile" style="max-height: 100px;"/>
-              <button class="btn btn-success me-2" onclick="approveID('${doc.id}')">Approve</button>
-              <button class="btn btn-danger" onclick="rejectID('${doc.id}')">Reject</button>
-            </div>
-          </div>
-        `;
-      });
-    });
+        // ✅ Add Game ID
+        function addGameID() {
+            const gameName = document.getElementById("gameName").value;
+            const gameID = document.getElementById("gameID").value;
+            const price = document.getElementById("price").value;
 
-    // Load pending Add Money requests
-    db.collection('addMoneyRequests').where('status', '==', 'pending').onSnapshot(snapshot => {
-      pendingMoneyDiv.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        pendingMoneyDiv.innerHTML += `
-          <div class="card mb-3 p-2">
-            <p><strong>${data.username}</strong> wants to add <strong>${data.amount} BDT</strong></p>
-            <button class="btn btn-success me-2" onclick="approveMoney('${doc.id}', ${data.amount})">Approve</button>
-            <button class="btn btn-danger" onclick="rejectMoney('${doc.id}')">Reject</button>
-          </div>
-        `;
-      });
-    });
+            if (gameName && gameID && price) {
+                const idRef = ref(database, "gameIDs");
+                const newIdRef = push(idRef);
+                set(newIdRef, {
+                    gameName: gameName,
+                    gameID: gameID,
+                    price: price
+                }).then(() => {
+                    alert("Game ID Added Successfully!");
+                }).catch((error) => {
+                    alert("Error: " + error.message);
+                });
+            } else {
+                alert("Please fill all fields!");
+            }
+        }
 
-    function approveID(docId) {
-      db.collection('idPosts').doc(docId).update({ status: 'approved' });
-    }
+        // ✅ Load All Users
+        const userRef = ref(database, "users");
+        onValue(userRef, (snapshot) => {
+            const users = snapshot.val();
+            const userTable = document.getElementById("userTable");
+            userTable.innerHTML = "";
+            for (let uid in users) {
+                const row = `<tr>
+                    <td>${users[uid].email}</td>
+                    <td>${users[uid].role}</td>
+                    <td>${users[uid].wallet || 0} BDT</td>
+                </tr>`;
+                userTable.innerHTML += row;
+            }
+        });
 
-    function rejectID(docId) {
-      db.collection('idPosts').doc(docId).delete();
-    }
-
-    function approveMoney(docId, amount) {
-      // Add balance logic here, currently just mark approved
-      db.collection('addMoneyRequests').doc(docId).update({ status: 'approved' });
-      alert(`Money request approved: +${amount} BDT (Implement balance update logic)`);
-    }
-
-    function rejectMoney(docId) {
-      db.collection('addMoneyRequests').doc(docId).delete();
-    }
-  </script>
+        // ✅ Load All Game IDs
+        const gameRef = ref(database, "gameIDs");
+        onValue(gameRef, (snapshot) => {
+            const games = snapshot.val();
+            const idTable = document.getElementById("idTable");
+            idTable.innerHTML = "";
+            for (let key in games) {
+                const row = `<tr>
+                    <td>${games[key].gameName}</td>
+                    <td>${games[key].gameID}</td>
+                    <td>${games[key].price} BDT</td>
+                </tr>`;
+                idTable.innerHTML += row;
+            }
+        });
+    </script>
 </body>
 </html>
