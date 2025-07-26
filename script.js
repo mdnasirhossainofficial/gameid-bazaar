@@ -1,49 +1,102 @@
-// Firebase Import (CDN ব্যবহার করব index.html এ)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+const auth = firebase.auth();
+const database = firebase.database();
 
-// ✅ Firebase Config (তোমার দেওয়া)
-const firebaseConfig = {
-  apiKey: "AIzaSyCkHH8U_zgWQ01SLLhqrnxhe8j6KjnM9Q0",
-  authDomain: "bismillah-telecom-ed960.firebaseapp.com",
-  databaseURL: "https://bismillah-telecom-ed960-default-rtdb.firebaseio.com",
-  projectId: "bismillah-telecom-ed960",
-  storageBucket: "bismillah-telecom-ed960.appspot.com",
-  messagingSenderId: "163310183508",
-  appId: "1:163310183508:web:036a2421c0cd3c264079c1"
+const authForm = document.getElementById('auth-form');
+const loginBtn = document.getElementById('login-btn');
+const signupBtn = document.getElementById('signup-btn');
+const authMessage = document.getElementById('auth-message');
+const contentSection = document.getElementById('content-section');
+const authSection = document.getElementById('auth-section');
+const userEmailSpan = document.getElementById('user-email');
+
+const logoutBtn = document.getElementById('logout-btn');
+const dashboardLink = document.getElementById('dashboard-link');
+const adminLink = document.getElementById('admin-link');
+
+const navLinks = {
+  home: document.getElementById('home-link'),
+  buy: document.getElementById('buy-link'),
+  sell: document.getElementById('sell-link'),
+  addmoney: document.getElementById('addmoney-link'),
 };
 
-// ✅ Firebase Init
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+let currentUser = null;
 
-// ✅ Fetch Game IDs from Firebase
-const idList = document.getElementById('id-list');
+// Show/hide navbar links based on role
+function updateNav(user) {
+  if(user){
+    authSection.style.display = 'none';
+    contentSection.style.display = 'block';
+    userEmailSpan.textContent = user.email;
+    logoutBtn.style.display = 'inline-block';
+    dashboardLink.style.display = 'inline-block';
 
-function loadGameIDs() {
-  const idRef = ref(db, 'gameIDs'); // Database path: gameIDs
-  onValue(idRef, (snapshot) => {
-    idList.innerHTML = ''; // Clear old data
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      Object.keys(data).forEach(key => {
-        const item = data[key];
-        const card = `
-          <div class="card">
-            <img src="${item.image}" alt="Game ID">
-            <h3>${item.name}</h3>
-            <p>Price: ${item.price} BDT</p>
-            <a href="buy.html?id=${key}" class="btn">Buy Now</a>
-          </div>
-        `;
-        idList.innerHTML += card;
-      });
-    } else {
-      idList.innerHTML = '<p>No Game IDs Available</p>';
-    }
-  });
+    // Check if user is admin from database (example path: /admins/user.uid)
+    database.ref('admins/' + user.uid).once('value').then(snapshot => {
+      if(snapshot.exists()){
+        adminLink.style.display = 'inline-block';
+      } else {
+        adminLink.style.display = 'none';
+      }
+    });
+
+  } else {
+    authSection.style.display = 'block';
+    contentSection.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    dashboardLink.style.display = 'none';
+    adminLink.style.display = 'none';
+  }
 }
 
-loadGameIDs();
+// Login
+loginBtn.addEventListener('click', e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-// ✅ Future: Handle Buy (buy.html এ কাজ করবে)
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      authMessage.textContent = 'Login successful!';
+      currentUser = userCredential.user;
+      updateNav(currentUser);
+    })
+    .catch(error => {
+      authMessage.textContent = error.message;
+    });
+});
+
+// Signup
+signupBtn.addEventListener('click', e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      authMessage.textContent = 'Signup successful! Please login.';
+      currentUser = userCredential.user;
+
+      // By default new user is not admin; you can add admins manually in Firebase DB
+      updateNav(currentUser);
+    })
+    .catch(error => {
+      authMessage.textContent = error.message;
+    });
+});
+
+// Logout
+logoutBtn.addEventListener('click', e => {
+  e.preventDefault();
+  auth.signOut().then(() => {
+    authMessage.textContent = 'Logged out.';
+    currentUser = null;
+    updateNav(null);
+  });
+});
+
+// Auth state observer
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  updateNav(user);
+});
