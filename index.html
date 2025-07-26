@@ -1,24 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameID Bazaar</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameID Bazaar - Home</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>GameID Bazaar</h1>
-        <nav>
-            <a href="index.html">হোম</a>
-            <a href="sell.html">ID বিক্রি করুন</a>
-            <a href="profile.html">প্রোফাইল</a>
-        </nav>
-    </header>
-    <main>
-        <h2>সব গেম ID কিনুন ও বিক্রি করুন</h2>
-        <p>এখানে আপনি নিরাপদে গেম আইডি কিনতে ও বিক্রি করতে পারবেন।</p>
-    </main>
+  <header>
+    <h1>GameID Bazaar</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="buy.html">Buy ID</a>
+      <a href="addmoney.html">Add Money</a>
+    </nav>
+  </header>
+
+  <section class="slider">
+    <div class="slide active">স্বাগতম GameID Bazaar-এ!</div>
+    <div class="slide">গেম আইডি কিনুন এবং বিক্রি করুন সহজে</div>
+    <div class="slide">নিরাপদ লেনদেন এবং দ্রুত সার্ভিস</div>
+  </section>
+
+  <section class="search-filter">
+    <input type="text" id="searchInput" placeholder="ID খুঁজুন..." />
+    <select id="categoryFilter">
+      <option value="">সকল ক্যাটাগরি</option>
+      <option value="Free Fire">Free Fire</option>
+      <option value="PubG">PubG</option>
+      <option value="Mobile Legends">Mobile Legends</option>
+    </select>
+  </section>
+
+  <section class="id-grid" id="idGrid">
+    <div class="id-card" data-category="Free Fire">
+      <img src="ff_profile_demo.jpg" alt="Free Fire Profile" />
+      <h3>Free Fire ID #1</h3>
+      <button>Buy Now</button>
+    </div>
+    <div class="id-card" data-category="PubG">
+      <img src="pubg_profile_demo.jpg" alt="PubG Profile" />
+      <h3>PubG ID #1</h3>
+      <button>Buy Now</button>
+    </div>
+    <div class="id-card" data-category="Mobile Legends">
+      <img src="ml_profile_demo.jpg" alt="Mobile Legends Profile" />
+      <h3>Mobile Legends ID #1</h3>
+      <button>Buy Now</button>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 GameID Bazaar | সর্বস্বত্ব সংরক্ষিত</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
-</html>
+      </html>
