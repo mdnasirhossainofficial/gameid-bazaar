@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - GameID Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>Create Account</h2>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="signup()">Sign Up</button>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+
+<script type="module">
+    import { auth, database } from "./firebase-config.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { ref, set } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    window.signup = function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            set(ref(database, "users/" + user.uid), {
+                email: email,
+                role: "user",
+                wallet: 0
+            });
+            alert("Signup Successful!");
+            window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+            alert(error.message);
+        });
+    }
+</script>
+</body>
+</html>
